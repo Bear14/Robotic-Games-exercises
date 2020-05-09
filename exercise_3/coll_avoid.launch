@@ -1,0 +1,10 @@
+<launch>
+  <arg name="world_number" default="1"/>
+
+  <include file="$(find exercise_3)/launch/turtlebot3_world$(arg world_number).launch"/>
+
+  <node pkg="exercise_3" type="collision_avoidance.py" name="collision_avoidance"/>
+
+  <node pkg="rosbag" type="record" name="log_odom" args="-O odom$(arg world_number).bag /odom"/>
+
+</launch>
