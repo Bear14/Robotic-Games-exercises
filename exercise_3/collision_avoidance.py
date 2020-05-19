@@ -2,6 +2,7 @@
 
 import numpy as np
 import rospy
+import math as m
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
@@ -10,7 +11,7 @@ from geometry_msgs.msg import Twist
 
 '''
 Die gesammte Kollisionsvermeidung ist in einer Klasse verpackt. Die aktuellen Geschwindigkeitsdaten werden durch den Callback des
-Geschwindigkeits-Subscribers bereitgestellt. Die aktuelle Geschwindigkeit wird da fuer die Berechnung der neuen Sollgeschwindigkeit verwendet. 
+Geschwindigkeits-Subscribers bereitgestellt. Die aktuelle Geschwindigkeit wird da fuer die Berechnung der neuen Sollgeschwindigkeit verwendet.
 Alternativ haetten hier auch globale Variabeln verwendet werden koennen. Diese Methode wird in der Community allerdings als
 eleganter angesehen.
 '''
@@ -23,8 +24,8 @@ class CollisionAvoidance:
 
 
         '''
-        Die momentane Geschwindigkeit des Roboters wird in der Simulation auf dem Topic odom gepublisht. 
-        Hier wollen wir subscriben. Ebenfalls benoetigen wir die Daten des Laserscanners. 
+        Die momentane Geschwindigkeit des Roboters wird in der Simulation auf dem Topic odom gepublisht.
+        Hier wollen wir subscriben. Ebenfalls benoetigen wir die Daten des Laserscanners.
         '''
         rospy.Subscriber("odom", Odometry, self.velocity_callback)
         rospy.Subscriber("/scan", LaserScan, self.laser_callback)
@@ -42,22 +43,22 @@ class CollisionAvoidance:
 
 
     def laser_callback(self, current_laser_scan):
-        sensor_angles = np.arange(current_laser_scan.angle_min, 
+        sensor_angles = np.arange(current_laser_scan.angle_min,
                           current_laser_scan.angle_max + current_laser_scan.angle_increment,
                           current_laser_scan.angle_increment)
         sensor_ranges = np.array(current_laser_scan.ranges)
-        force = self.calculate_force(sensor_angles, sensor_ranges)
+        force = self.calculate_force(sensor_angles,sensor_ranges)
         velocity_adjustment = Twist()
-        velocity_adjustment.linear.x = force[0]
+        velocity_adjustment.linear.x  = force[0]
         velocity_adjustment.angular.z = force[1]
-        
+
         self.col_avoid_publisher.publish(velocity_adjustment)
 
 
     def calculate_force(self,sonar_angles,sonar_ranges):
-    
+
         force = np.zeros(2)
-        
+
         '''
         HIER KOMMT DER CODE HIN
 
@@ -66,31 +67,21 @@ class CollisionAvoidance:
         Die 1. Komponente entspricht dabei der Aenderung der Lineargeschwindigkeit
         und die 2. enstprechend der Aenderung der Winkelgeschwindigkeit.
         '''
-        # sum the d's
-        wall_dist = 5
-        d_sum = np.zeros(2)
         for i in range(len(sonar_ranges)):
-            phi = sonar_angles[i]
-            distance = wall_dist-sonar_ranges[i]
-            if distance < 0:
-                distance = 0
+            if (sonar_ranges[i] < 0.7):
+                force[0] += -m.cos(sonar_angles[i])*(0.7-sonar_ranges[i])
+            if (sonar_ranges[i] < 0.8):
+                force[1] += -m.sin(sonar_angles[i])*(0.8-sonar_ranges[i])
 
-            d = distance * np.array([np.sin(phi), np.cos(phi)])
-            d_sum += d
-
-
-        d_sum2 = np.abs(complex(d_sum[0],d_sum[1]))
-        d_sum3 = np.angle(complex(d_sum[0],d_sum[1]))
-
-
-        force = -1*np.array([d_sum2, d_sum3])
-
-        #force = (force - 0.1) / (1 - 0.1)
+        force[0] = (force[0]/50) + 0.4
+        if (force[0] > 0.4):
+            force[0] = 0.4
+        
+        force[1] /= 24
+        if ((force[1] < 0.1) and (force[0] < 0.2)):
+            force[1] *= 2
 
         return force
-
-
-
 
 if __name__ == '__main__':
 

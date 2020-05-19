@@ -4,9 +4,11 @@ if sonar_ranges[0] < schwellwert:
     if sonar_ranges[3/4 der gesamtzahlt der range] bis sonar_ranges[max] / 1/4 der anzahl < schwellwert:
         if sonar_ranges[1] bis sonar_ranges[1/4] / 1/4 < schwellwert:
             if sonar_ranges[1/2 der anzahl] < schwellwert:
-                jetzt ist er ziemlich eingekreist: jetzt alle vergleichen und den bot da hin drehen, wo der abstand noch am größten ist
+                jetzt ist er ziemlich eingekreist: 
+                jetzt alle vergleichen und den bot da hin drehen, wo der abstand noch am größten ist
             else:
-                den bot eher nach hinten drehen, schauen, ob links oder rechts mehr platz hat und dementsprechend da hin
+                den bot eher nach hinten drehen, schauen, 
+                ob links oder rechts mehr platz hat und dementsprechend da hin
         else:
             nach rechts ist platz, also nach rechts drehen
     else:
@@ -14,14 +16,25 @@ if sonar_ranges[0] < schwellwert:
 else:
     if sonar_ranges[3/4 der gesamtzahlt der range] bis sonar_ranges[max] / 1/4 der anzahl < schwellwert:
         # hier ist direkt vorne frei, aber links kommt ein hinderniss, an das er drandeppern kann
-        if sonar_ranges[1] bis sonar_ranges[1/4] / 1/4 < schwellwert:
+        if sonar_ranges[1] bis sonar_ranges[1/4] / 1/4 der Anzahl < schwellwert:
         #rechts kommt auch ein hinderniss, also kommt er direkt nach vorne vllt gar nicht durch
             if sonar_ranges[1/2 der anzahl] < schwellwert:
-                jetzt ist er ziemlich eingekreist: jetzt alle vergleichen und den bot da hin drehen, wo der abstand noch am größten ist
-                # nach hinten ist auch ein hinderniss. jetzt noch testen, wo er am meisten platz hat, oder ob er gerade aus vllt noch durchpasst.
+                jetzt ist er ziemlich eingekreist: 
+                jetzt alle vergleichen und den bot da hin drehen, 
+                wo der abstand noch am größten ist
+                # nach hinten ist auch ein hinderniss. 
+                jetzt noch testen, wo er am meisten platz hat, 
+                oder ob er gerade aus vllt noch durchpasst.
             else:
-                den bot eher nach hinten drehen, schauen, ob links oder rechts mehr platz hat und dementsprechend da hin
+                den bot eher nach hinten drehen, schauen, 
+                ob links oder rechts mehr platz hat und dementsprechend da hin
         else:
-            nach rechts ist platz, also nach rechts drehen, da er allerdings hier nach vorne ja platz hat, muss er nicht komplett nach recht, sondern nur ein bisschen
+            nach rechts ist platz, also nach rechts drehen, 
+            da er allerdings hier nach vorne ja platz hat, 
+            muss er nicht komplett nach rechts, sondern nur ein bisschen
+    else if sonar_ranges[1] bis sonar_ranges[1/4] / 1/4 der Anzahl < schwellwert:
+        links ist frei, aber rechts nicht -> nach links abdrehen
     else:
-        nach links ist platz, also nach links drehen, und hier halt auch nur ein bisschen
+        vorne, links und rechts ist frei, 
+        also Geschwindigkeit auf 0.2 und Drehung auf 0.0. 
+        also einfach nur gerade aus
