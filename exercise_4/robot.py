@@ -26,6 +26,8 @@ class Robot():
 		kinematic_array = (np.matrix([[self.pos_x], [self.pos_y], [self.orientation]]) + np.matrix([[np.cos(self.orientation), 0], [np.sin(self.orientation), 0], [0, 1]]) * np.matrix([[v], [omega]]) * delta_t)
 		self.pos_x, self.pos_y, self.orientation = kinematic_array.item(0), kinematic_array.item(1), kinematic_array.item(2)
 
+	def distance(self, other_robot):
+		return math.sqrt((self.pos_x - other_robot.pos_x) * (self.pos_x - other_robot.pos_x) + (self.pos_y - other_robot.pos_y) * (self.pos_y - other_robot.pos_y))
 
 	def alignment_force(self, robots, radius):
 		force = np.zeros(2)
@@ -36,12 +38,36 @@ class Robot():
 	def cohesion_force(self, robots, radius): # center of mass
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
+		cs = 1
+
+		center_x = 0
+		center_y = 0
+		num_neighbours = 0
+
+		for robot in robots:
+			if self.distance(robot) < radius:
+				center_x += robot.pos_x
+				center_y += robot.pos_y
+				num_neighbours += 1
+
+		if num_neighbours:
+			center_x = center_x / num_neighbours
+			center_y = center_y / num_neighbours
+
+			force[0] = (center_x - self.pos_x) * cs
+			force[1] = (center_y - self.pos_y) * cs
+
 		return force
 
 	
 	def separation_force(self, robots, radius): # 
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
+
+		
+
+
+
 		return force
 
 		
