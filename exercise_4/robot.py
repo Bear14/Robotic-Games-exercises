@@ -12,48 +12,43 @@ class Robot():
 		self.pos_x = x
 		self.pos_y = y
 		self.orientation = phi
-		self.trajectory = []
+		self.trajectory = [[0, 0]]		# init value needed for alignment_force calculation
 		
 		self.width = 20
 		self.height = 20
 		
 		
 	def kin_update(self, v, omega, delta_t):
-	
-		#self.trajectory.append([self.pos_x, self.pos_y]) # add old position value to trajectory
+		if(len(self.trajectory)) > 5:		# make trajectory list to circular buffer to speed up the simulation
+			self.trajectory.pop(0)
+		self.trajectory.append([self.pos_x, self.pos_y])		# add old position value to trajectory
 		# TODO 4.1) implement kinematics
 
 		kinematic_array = (np.matrix([[self.pos_x], [self.pos_y], [self.orientation]]) + np.matrix([[math.cos(self.orientation), 0], [math.sin(self.orientation), 0], [0, 1]]) * np.matrix([[v], [omega]]) * delta_t)
 		self.pos_x, self.pos_y, self.orientation = kinematic_array.item(0), kinematic_array.item(1), kinematic_array.item(2)
 
-
-	def distance(self, other_robot):
+	def distance_to(self, other_robot):
 		return math.sqrt((self.pos_x - other_robot.pos_x) * (self.pos_x - other_robot.pos_x) + (self.pos_y - other_robot.pos_y) * (self.pos_y - other_robot.pos_y))
 
 	def alignment_force(self, robots, radius):
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
-		avg_dx = 0
-		avg_dy = 0
+		avg_vel = np.zeros(2)
 		num_neighbours = 0
 		for robot in robots:
-			if self.distance(robot) < radius:
-				avg_dx += robot.pos_x
-				avg_dy += robot.pos_y
+			if self.distance_to(robot) < radius:
+				direction = np.array([1, 0])
+				if robot.trajectory[len(robot.trajectory)-1][0]:
+					tra_vec = robot.trajectory[len(robot.trajectory)-1]
+					direction = np.array([robot.pos_x - tra_vec[0], robot.pos_y - tra_vec[1]])
+
+				avg_vel += np.array([math.cos(robot.orientation), math.sin(robot.orientation)]) * np.linalg.norm(direction)
 				num_neighbours += 1
 
 		if num_neighbours:
-			avg_dx = avg_dx / num_neighbours
-			avg_dy = avg_dy / num_neighbours
+			avg_vel /= num_neighbours
 
-			#avg_dx -= self.pos_x
-			#avg_dy -= self.pos_y
-			#buff = np.linalg.norm(np.array([avg_dx, avg_dy]))
-			#if buff > 0:
-			#	force[0] = avg_dx / buff
-			#	force[1] = avg_dy / buff
-			force[0] = avg_dx
-			force[1] = avg_dy
+			force = avg_vel
 
 		return force
 
@@ -62,43 +57,35 @@ class Robot():
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
 
-		center_x = 0
-		center_y = 0
 		num_neighbours = 0
 
 		for robot in robots:
-			if self.distance(robot) < radius:
-				center_x += robot.pos_x
-				center_y += robot.pos_y
+			if self.distance_to(robot) < radius:
+				force[0] += robot.pos_x
+				force[1] += robot.pos_y
 				num_neighbours += 1
 
 		if num_neighbours:
-			center_x = center_x / num_neighbours
-			center_y = center_y / num_neighbours
+			force = force / num_neighbours
 
-			force[0] = (center_x - self.pos_x)
-			force[1] = (center_y - self.pos_y)
+			force[0] = (force[0] - self.pos_x)
+			force[1] = (force[1] - self.pos_y)
 
 		return force
 
 	
-	def separation_force(self, robots, radius): # 
+	def separation_force(self, robots, radius):
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
-		min_distance = 1
+		min_distance = 30		# magic number O.o height + 10 but might need to be changed
 
-		move_x = 0
-		move_Y = 0
+		force[0] = 0
+		force[1] = 0
 		for robot in robots:
 			if not self == robot:
-				if self.distance(robot) < min_distance:
-					move_x += self.pos_x - robot.pos_y
-					move_Y += self.pos_y - robot.pos_y
-
-
-		force[0] = move_x
-		force[1] = move_Y
-
+				if self.distance_to(robot) < radius and self.distance_to(robot) < min_distance:
+					force[0] += self.pos_x - robot.pos_y
+					force[1] += self.pos_y - robot.pos_y
 
 		return force
 
@@ -106,14 +93,14 @@ class Robot():
 	def behavior_update(self, robots):
 		total_force = np.zeros(2)
 		# TODO 4.2) play with values
-		c1 = 5 * 1
+		c1 = 5
 		c2 = 1
 		c3 = 1
 		
 		align = self.alignment_force(robots, 5)
 		separation = self.separation_force(robots, 5)
 		cohesion = self.cohesion_force(robots, 500)
-		total_force = c1 * align + c2 * separation  + c3 * cohesion
+		total_force = c1 * align + c2 * separation + c3 * cohesion
 
            
 		# Calc force (to absolut value and angle)
