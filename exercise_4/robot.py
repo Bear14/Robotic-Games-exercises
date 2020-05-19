@@ -32,13 +32,24 @@ class Robot():
 	def alignment_force(self, robots, radius):
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
+		# avg_dx = 0
+		# avg_dy = 0
+		# num_neighbours = 0
+		# for robot in robots:
+		# 	if self.distance(robot) < radius:
+		# 		avg_dx += 0
+		# 		avg_dy += 0
+		# 		num_neighbours += 1
+		#
+		# if num_neighbours:
+		#
+
 		return force
 
 	
 	def cohesion_force(self, robots, radius): # center of mass
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
-		cs = 1
 
 		center_x = 0
 		center_y = 0
@@ -54,8 +65,8 @@ class Robot():
 			center_x = center_x / num_neighbours
 			center_y = center_y / num_neighbours
 
-			force[0] = (center_x - self.pos_x) * cs
-			force[1] = (center_y - self.pos_y) * cs
+			force[0] = (center_x - self.pos_x)
+			force[1] = (center_y - self.pos_y)
 
 		return force
 
@@ -63,9 +74,19 @@ class Robot():
 	def separation_force(self, robots, radius): # 
 		force = np.zeros(2)
 		# TODO 4.2) implement behavior
+		min_distance = 1
 
-		
+		move_x = 0
+		move_Y = 0
+		for robot in robots:
+			if not self == robot:
+				if self.distance(robot) < min_distance:
+					move_x += self.pos_x - robot.pos_y
+					move_Y += self.pos_y - robot.pos_y
 
+
+		force[0] = move_x
+		force[1] = move_Y
 
 
 		return force
@@ -80,7 +101,7 @@ class Robot():
 		
 		align = self.alignment_force(robots, 5)
 		separation = self.separation_force(robots, 5)
-		cohesion = self.cohesion_force(robots, 5)
+		cohesion = self.cohesion_force(robots, 500)
 		total_force = c1 * align + c2 * separation  + c3 * cohesion
 
            
