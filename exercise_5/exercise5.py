@@ -29,12 +29,15 @@ def reward(state):
 class mini_agent:
 
     def __init__(self):
-        self.game_state       = np.ones(3)
-        self.strategy_choices = np.linspace(-0.2,0.2,10)  #diskretisierter Entscheidungsraum
+        self.scan_steps = 7
+        self.game_state       = np.ones(self.scan_steps)
+        self.strategy_choices = np.linspace(-np.pi / 4, np.pi / 4, self.scan_steps)  #diskretisierter Entscheidungsraum
 
         rospy.Subscriber("\odom",Odometry,self.odom_callback)
 
         # Aufgabe 1 subscriber hier implementieren! callback soll klassenfunktion sein
+        rospy.Subscriber("\scan", LaserScan, self.scan_callback)
+
 
         pub = rospy.Publisher("cmd_vel",Twist,queue_size=10)
 
@@ -45,6 +48,14 @@ class mini_agent:
             move_value    = [reward(update_state(current_state,move)) for move in self.strategy_choices]
             out.angular.z = self.strategy_choices[np.argmax(move_value)]
             pub.publish(out)
+
+    def scan_callback(self, data):
+        keys = np.linspace(315, 405, self.scan_steps)
+        for i in range(len(keys)):
+            keys[i] = keys[i] % 360
+
+        for j in range(len(keys)):
+            self.game_state[j] = data.ranges[keys[j]]
 
 
     def odom_callback(self,data):
