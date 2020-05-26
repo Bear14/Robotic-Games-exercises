@@ -1,0 +1,1 @@
+Bereich von 0,785398= 45Grad bis -0,785398= 315Grad mit einer Schrittgrüße von 0,261799=15grad
