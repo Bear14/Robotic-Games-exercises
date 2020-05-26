@@ -1,1 +1,6 @@
-Bereich von 0,785398= 45Grad bis -0,785398= 315Grad mit einer Schrittgrüße von 0,261799=15grad
+Bereich von 0,785398 = 45° bis -0,785398 = 315° mit einer Schrittgröße von 0,261799=15°
+
+Da wir eine konstante Lineargeschwindigkeit haben, kann der Bot nicht beliebig 
+schnell seine Richtung ändern weshalb wir den Sichtwinkel auf 90° beschränkt haben.
+
+Die Auflösung ist hoch genug um noch Objekte > ~0.91m zu erkennen.
