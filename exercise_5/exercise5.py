@@ -30,7 +30,7 @@ class mini_agent:
 
     def __init__(self):
         self.scan_steps = 7
-        self.game_state       = np.ones(self.scan_steps)
+        self.game_state       = np.ones(3 + self.scan_steps)
         self.strategy_choices = np.linspace(-np.pi / 4, np.pi / 4, self.scan_steps)  #diskretisierter Entscheidungsraum
 
         rospy.Subscriber("\odom",Odometry,self.odom_callback)
@@ -54,8 +54,8 @@ class mini_agent:
         for i in range(len(keys)):
             keys[i] = keys[i] % 360
 
-        for j in range(len(keys)):
-            self.game_state[j] = data.ranges[keys[j]]
+        for j in range(3, len(keys)+3):
+            self.game_state[j] = data.ranges[keys[j - 3]]
 
 
     def odom_callback(self,data):
