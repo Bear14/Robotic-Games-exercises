@@ -1,0 +1,13 @@
+<launch>
+
+  <arg name="topic_name_c_vel"/>
+  <arg name="mouse"/>
+  <arg name="own_odom_topic"/>
+  <arg name="topic_name_opponent_c_vel"/>
+  <arg name="opponent_odom_topic"/>
+
+  <include file="$(find exercise_6)/launch/multi_turtlebot3.launch"/>
+
+  <node name="cat" type="cat_mouse_game.py" pkg="robotic_games" args="/tb3_0/cmd_vel False /tb3_0/odom /tb3_1/cmd_vel /tb3_1/odom" />
+  <node name="mouse" type="cat_mouse_game.py" pkg="robotic_games" args="/tb3_1/cmd_vel True /tb3_1/odom /tb3_0/cmd_vel /tb3_0/odom" />
+</launch>
