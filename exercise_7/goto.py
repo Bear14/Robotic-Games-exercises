@@ -33,6 +33,9 @@ def movebase_client():
     # Waits for the server to finish performing the action.
     wait = client.wait_for_result()
     # If the result doesn't arrive, assume the Server is not available
+    if client.get_state() == 4:
+        rospy.loginfo("Can't reach goal!")
+        return 0
     if not wait:
         rospy.logerr("Action server not available!")
         rospy.signal_shutdown("Action server not available!")
