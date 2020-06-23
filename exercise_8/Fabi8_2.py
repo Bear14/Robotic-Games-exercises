@@ -38,12 +38,9 @@ for k in range(N): # loop over control intervals
 #   Add limited control here      #
 ###################################
 #Lenkradius beschraunken
-opti.subject_to(X[2,:] >= -3)
-opti.subject_to(X[2,:] <= 3)
+opti.subject_to(opti.bounded(-3,theta,-3))
 #Geschwindichkeit beschraunken
-opti.subject_to(U[0,:] <= 1)
-opti.subject_to(U[0,:] >= -1)
-
+opti.subject_to(opti.bounded(-1,U[0,:],1))
 # opti.subject_to(X[0,:] >= -0.1)
 
 #racing circuit parameter:
@@ -53,8 +50,9 @@ width=1
 ###################################
 #   Add curve constraints here    #
 ###################################
-opti.subject_to(X[0,:] >= rx cos(T))
-opti.subject_to(X[1,:] >= ry cos(T))
+opti.subject_to(y <= sqrt((ry+width)**2*(1-x**2/(rx+width)**2)))
+opti.subject_to(y >= sqrt(ry**2*(1-x**2/rx**2)))
+# opti.subject_to(X[1,:] >= )
 
 # #inner bound X
 # opti.subject_to(X[0,:] >= sqrt(rx**2*(1-X[1,:]**2/ry**2)))
