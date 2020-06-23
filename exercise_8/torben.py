@@ -1,28 +1,32 @@
 from casadi import *
-from math import cos, sin, pi
 
 
 if __name__ == '__main__':
     x = SX.sym('x')
     y = SX.sym('y')
     th = SX.sym('th')
-    state = vertcat(x, y, th)
+    x = vertcat(x, y, th)
 
     uv = SX.sym('uv')
     uw = SX.sym('uw')
-    para = vertcat(uv, uw)
+    p = vertcat(uv, uw)
 
     g1 = cos(th)*uv
     g2 = sin(th)*uv
     g3 = uw
-    diff = vertcat(g1, g2, g3)
-
-    dae = {'x': state, 'p': para, 'ode': diff}
-
-    F = integrator('F', 'idas', dae)
-
+    ode = vertcat(g1, g2, g3)
+    dae = {'x': x, 'p': p, 'ode': ode}
 
     print(dae)
 
-    print(x)
+    opts = {'t0':0,'tf':2}
+    F = integrator('F','idas',dae,opts)
+    # F = integrator('F', 'idas', dae)
+
+    print(F)
+
+    bla=(0,0,pi)
+    blub=(1,1)
+
+    print(F(x0=bla ,p=blub))
     pass
