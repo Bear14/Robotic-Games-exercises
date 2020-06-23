@@ -1,15 +1,16 @@
 from casadi import *
 
 if __name__ == '__main__':
+        # Zustand
     x = SX.sym('x')
     y = SX.sym('y')
     th = SX.sym('th')
     x = vertcat(x, y, th)
-
+        # Parameter
     uv = SX.sym('uv')
     uw = SX.sym('uw')
     p = vertcat(uv, uw)
-
+        # Differentialgleichung
     g1 = cos(th) * uv
     g2 = sin(th) * uv
     g3 = uw
