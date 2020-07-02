@@ -1,0 +1,9 @@
+1 * Subscriber für Positionen
+2 * Laser scanner auslesen (Subscriber)
+3 * Publisher für lin.x und angular vel
+4 * Positions update
+
+Kraftbasiert Recherche
+
+* Kraftbasiert leere Welt richtung Maus und Käse
+* Kraftbasiert obstacle avoidance
