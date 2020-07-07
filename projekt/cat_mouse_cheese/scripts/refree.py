@@ -17,7 +17,7 @@ def cat_odom_callback(odom):
     x_cat = odom.pose.pose.position.x
     y_cat = odom.pose.pose.position.y
     dist = math.sqrt((x_mouse - x_cat)**2 + (y_mouse - y_cat)**2)
-    if dist < 1.0 and game_state == 0:
+    if dist < 0.15 and game_state == 0:
         game_state = 2
     if game_state == 2:
     		rospy.loginfo("mouse was caught. cat wins")
@@ -30,7 +30,7 @@ def mouse_odom_callback(odom):
     y_mouse = odom.pose.pose.position.y
     dist = math.sqrt((x_mouse - x_cheese)**2 + (y_mouse - y_cheese)**2)
     rospy.loginfo("new distance to cheese: " + str(dist))
-    if dist < 0.5 and game_state == 0:
+    if dist < 0.15 and game_state == 0:
         game_state = 1 
     if (game_state == 1):
     		rospy.loginfo("cheese was caught. mouse wins")
