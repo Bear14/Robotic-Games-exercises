@@ -1,0 +1,3 @@
+<launch>
+    <node name="cat" pkg="cat_mouse_cheese" type="cat.py" output="screen"/>
+</launch>
