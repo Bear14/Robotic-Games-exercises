@@ -28,7 +28,7 @@ class Cat:
         self.sensor_angles = None
         self.sensor_ranges = None
 
-        # für homing
+        # fuer homing
         self.rho=1
         self.alpha=1
         self.phi_cat=1
@@ -50,8 +50,8 @@ class Cat:
         euler = euler_from_quaternion(quat)
         self.phi_cat = euler[2]
 
-        self.update_polar()
-        self.homing()
+        #self.update_polar()
+        #self.homing()
 
     def mouse_odom_callback(self, odom):
         self.x_mouse = odom.pose.pose.position.x
@@ -104,7 +104,7 @@ class Cat:
     def update_polar(self):
         delta_x = self.x_mouse - self.x_cat
         delta_y = self.y_mouse - self.y_cat
-        # für homing
+        # fuer homing
         self.roh = m.sqrt(delta_x**2 + delta_y**2) # Distanz zum ziel
         self.alpha = m.atan2(delta_y,delta_x) - self.phi_cat # Winkel zum ziel
 
